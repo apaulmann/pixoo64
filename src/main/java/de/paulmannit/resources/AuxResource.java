@@ -12,6 +12,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -32,10 +33,16 @@ public class AuxResource {
     public Response sendTemplate() {
         try {
             Log.info("sendTemplate");
-            pixooService.clear();
             LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE dd.MM.", Locale.GERMAN);
-            pixooService.drawTextLeft(now.format(formatter), 1, Color.Red, 1, new FontVari8());
+            String[] WOCHENTAGE = {
+                    "So.", "Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."
+            };
+            DayOfWeek day = now.getDayOfWeek();
+            String tag = WOCHENTAGE[day.getValue() % 7];
+
+            pixooService.clear();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.", Locale.GERMAN);
+            pixooService.drawTextLeft(tag + " " +now.format(formatter), 1, Color.Red, 1, new FontVari8());
             pixooService.drawLine(new Position(0, 7), new Position(64, 7), Color.White);
             pixooService.drawLine(new Position(0, 21), new Position(64, 21), Color.White);
 
