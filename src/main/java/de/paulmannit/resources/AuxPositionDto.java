@@ -10,10 +10,11 @@ import java.io.Serializable;
 @Getter
 @Setter
 @RegisterForReflection
-public class AuxDto implements Serializable {
+public class AuxPositionDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private Double value;
-    private Boolean isClosed;
+    Double profitToday;
+    Double profitMonth;
+    String month;
 }

@@ -17,5 +17,4 @@ public interface PixooClient {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     String post(String body);
-
 }
