@@ -29,7 +29,7 @@ jobs:
             -Dquarkus.native.target=linux-aarch64
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: native-binary-arm64
           path: target/*-runner
