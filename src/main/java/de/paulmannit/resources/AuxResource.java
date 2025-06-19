@@ -50,30 +50,34 @@ public class AuxResource {
             pixooService.drawTextLeft("USD", 15, Color.AliceBlue, 1, new FontVari8());
             pixooService.push();
 
-            // Imageliste
-            // Zeit
-            List<TextItem> lst = new ArrayList<>();
-            TextItem itemDatum = new TextItem();
-            itemDatum.setTextId(1);
-            itemDatum.setType(6);
-            itemDatum.setX(37);
-            itemDatum.setY(1);
-            itemDatum.setDir(0);
-            itemDatum.setFont(18);
-            itemDatum.setTextWidth(32);
-            itemDatum.setTextHeight(16);
-            itemDatum.setSpeed(100);
-            itemDatum.setAlign(1);
-            itemDatum.setColor(Color.Red.toHex());
-            lst.add(itemDatum);
-
-            pixooService.sendItemList(lst);
+            sendTimeLine();
 
             return Response.ok().build();
         } catch (Exception e) {
             Log.error(e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Map.of("error", e.getMessage())).build();
         }
+    }
+
+    private void sendTimeLine() {
+        // Imageliste
+        // Zeit
+        List<TextItem> lst = new ArrayList<>();
+        TextItem itemDatum = new TextItem();
+        itemDatum.setTextId(1);
+        itemDatum.setType(6);
+        itemDatum.setX(37);
+        itemDatum.setY(1);
+        itemDatum.setDir(0);
+        itemDatum.setFont(18);
+        itemDatum.setTextWidth(32);
+        itemDatum.setTextHeight(16);
+        itemDatum.setSpeed(100);
+        itemDatum.setAlign(1);
+        itemDatum.setColor(Color.Red.toHex());
+        lst.add(itemDatum);
+
+        pixooService.sendItemList(lst);
     }
 
     @POST
@@ -124,6 +128,7 @@ public class AuxResource {
                     29, (dto.getProfitMonth()>=0?Color.Green: Color.Red), 2, new FontVari8());
             pixooService.push();
 
+            sendTimeLine();
             return Response.ok().build();
         } catch (Exception e) {
             Log.error(e.getMessage());
