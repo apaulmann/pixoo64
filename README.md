@@ -1,68 +1,78 @@
 # pixoo64
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This project is a Quarkus-based module that provides a service layer to control a Divoom Pixoo device via its HTTP API.
+It is designed to be included as a dependency in other projects.
+Its based on the inoffical API documentation available at <https://doc.divoom-gz.com/web/#/12?page_id=219>
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Features
 
-## Running the application in dev mode
+- Initialize and configure a Pixoo device (timezone, UTC time, 24-hour mode, brightness).
 
-You can run your application in dev mode that enables live coding using:
+- Draw and send graphics to the Pixoo (pixels, rectangles, lines, images).
 
-```shell script
-./mvnw quarkus:dev
-```
+- Render text in different alignments (left, right, center) using custom fonts.
+
+- Send scrolling or static text via the Pixoo HTTP API.
+
+- Push images or animations (SendHttpGif).
+
+- Manage Pixoo device commands such as reboot or brightness adjustment.
+
+- Utility support for working with fonts, colors, and positions.
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 
-## Packaging and running the application
+## Installation
 
-The application can be packaged using:
+Add the module as a dependency to your Quarkus project:
 
-```shell script
-./mvnw package
+```
+<dependency>
+    <groupId>de.paulmannit</groupId>
+    <artifactId>pixoo-service</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+## Configuration
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+The service requires at least the Pixoo display size and the url to be configured in application.properties:
 
-If you want to build an _über-jar_, execute the following command:
+```
+pixoo.size=64
+pixoo-api/mp-rest/url=http://192.168.177.115
+```
+## Usage
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+```
+@Startup
+@ApplicationScoped
+public class PageService {
+    @Inject
+    PixooService pixooService;
+
+    @PostConstruct
+    public void startup() {
+        init();
+    }
+
+    public void init() {
+        pixooService.initialize();
+
+        TextItem item = new TextItem();
+        item.setTextId(2);
+        item.setX(1);
+        item.setY(10);
+        item.setDir(0);
+        item.setFont(1);
+        item.setTextWidth(64);
+        item.setSpeed(10);
+        item.setTextString("Hello Pixoo");
+        item.setColor("#FF0000");
+        item.setAlign(1);
+
+        pixooService.sendHttpText(item);
+    }
+}
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/pixoo64-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-- Scheduler ([guide](https://quarkus.io/guides/scheduler)): Schedule jobs and tasks
-- REST JAXB ([guide](https://quarkus.io/guides/resteasy-reactive#xml-serialisation)): JAXB serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)

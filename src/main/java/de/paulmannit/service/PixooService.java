@@ -1,6 +1,5 @@
 package de.paulmannit.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.paulmannit.PixooJsonUtil;
 import de.paulmannit.client.PixooClient;
 import de.paulmannit.service.fonts.Color;
@@ -145,7 +144,6 @@ public class PixooService {
         send(body.toString());
     }
 
-
     public void setTimeInUTC() {
         ZoneId berlinZone = ZoneId.of("Europe/Berlin");
         ZonedDateTime nowInBerlin = ZonedDateTime.now(berlinZone);
@@ -195,6 +193,16 @@ public class PixooService {
         JsonObject body = Json.createObjectBuilder()
                 .add("Command","Channel/SetBrightness")
                 .add("Brightness", brightness)
+                .build();
+        send(body.toString());
+    }
+
+    public void playBuzzer(int activeTimeInCycle, int offTimeInCycle, int playTotalTime) {
+        JsonObject body = Json.createObjectBuilder()
+                .add("Command","Device/PlayBuzzer")
+                .add("ActiveTimeInCycle", activeTimeInCycle)
+                .add("OffTimeInCycle", offTimeInCycle)
+                .add("PlayTotalTime", playTotalTime)
                 .build();
         send(body.toString());
     }
