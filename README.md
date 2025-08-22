@@ -20,8 +20,6 @@ Its based on the inoffical API documentation available at <https://doc.divoom-gz
 
 - Utility support for working with fonts, colors, and positions.
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
-
 ## Installation
 
 Add the module as a dependency to your Quarkus project:
