@@ -16,16 +16,22 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.List;
 
 @ApplicationScoped
@@ -67,6 +73,15 @@ public class PixooService {
 
     public String toBase64() {
         return Base64.getEncoder().encodeToString(buffer);
+    }
+
+    public String playTFGif(String url) {
+        JsonObject body = Json.createObjectBuilder()
+                .add("Command", "Device/PlayTFGif")
+                .add("FileType", 2)
+                .add("FileName", url)
+                .build();
+        return send(body.toString());
     }
 
     public String sendHttpGif(int picNum, int picWidth, int picOffset, int picSpeed) {
@@ -215,7 +230,44 @@ public class PixooService {
         String response = pixoo.reboot(body);
     }
 
-    public void drawImage(Path path, int posX, int posY, int w, int h) throws IOException {
+    public void drawImageFromResource(String resourcePath, int posX, int posY, int w, int h) throws IOException {
+        try (InputStream is = Thread.currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream(resourcePath)) {
+
+            if (is == null) {
+                throw new FileNotFoundException("Resource not found: " + resourcePath);
+            }
+
+            BufferedImage img = ImageIO.read(is);
+            if (img == null) {
+                throw new IOException("ImageIO konnte Ressource nicht dekodieren: " + resourcePath);
+            }
+
+            drawBufferedImage(img, posX, posY, w, h);
+        }
+    }
+
+    private void drawBufferedImage(BufferedImage img, int posX, int posY, int w, int h) {
+        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
+        Graphics2D g = bi.createGraphics();
+        g.drawImage(img, 0, 0, w, h, null);
+        g.dispose();
+
+        byte[] pixels = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int idx = (y * w + x) * 3;
+                drawPixel(posX + x, posY + y, new de.paulmannit.service.fonts.Color(
+                        Byte.toUnsignedInt(pixels[idx + 2]), // R
+                        Byte.toUnsignedInt(pixels[idx + 1]), // G
+                        Byte.toUnsignedInt(pixels[idx])     // B
+                ));
+            }
+        }
+    }
+
+    /*public void drawImage(Path path, int posX, int posY, int w, int h) throws IOException {
         BufferedImage img = ImageIO.read(path.toFile());
         BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
         Graphics2D g = bi.createGraphics();
@@ -231,7 +283,7 @@ public class PixooService {
                         Byte.toUnsignedInt(pixels[idx])));
             }
         }
-    }
+    }*/
 
     public int getTextWidth(String text, Font font) {
         int width = 0;
