@@ -23,7 +23,7 @@ class PixooServiceTest {
     PixooService pixooService;
 
     @Test
-    void testInitialize() {
+    void testInitialize() throws InterruptedException {
         pixooService.initialize();
         pixooService.setBrightness(80);
 
@@ -41,6 +41,21 @@ class PixooServiceTest {
         pixooService.drawRect(new Position(0, 6), new Position(64, 64), Color.Black, true);
         pixooService.drawLine(new Position(0, 7), new Position(64, 7), Color.White);
         pixooService.push();
+
+        pixooService.drawTextCenter("blabla", 15, Color.White, new FontVari8());
+        pixooService.push();
+
+        Thread.sleep(1000);
+
+        pixooService.drawTextCenter("blabla", 25, Color.Red, new FontVari8());
+        pixooService.push();
+
+        Thread.sleep(1000);
+        pixooService.drawRect(new Position(0, 25), new Position(64, 33), Color.White, true);
+        pixooService.drawTextCenter("blabla", 25, Color.Red, new FontVari8());
+        pixooService.push();
+
+        /*
         // Time
         List<TextItem> lst = new ArrayList<>();
         TextItem itemDatum = new TextItem();
@@ -57,7 +72,7 @@ class PixooServiceTest {
         itemDatum.setColor(Color.Red.toHex());
         lst.add(itemDatum);
 
-        pixooService.sendItemList(lst);
+/        pixooService.sendItemList(lst);
 
         // Text1
         TextItem item = new TextItem();
@@ -88,7 +103,7 @@ class PixooServiceTest {
         item2.setAlign(1);
 
         pixooService.sendHttpText(item2);
-
+*/
         pixooService.playBuzzer(500, 500, 1000);
     }
 }
